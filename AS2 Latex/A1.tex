@@ -1,0 +1,23 @@
+\item\footnote{Full submission can be found on \url{https://github.com/jinhanloh2021/AI\_AS1}} Write True/False for the following conditional independence statements. Justify clearly your answer by showing active/blocked trails as necessary and appropriate rules for them to be active/blocked. [No coding required for this question. Each sub-question has \textbf{2 points}]
+
+\begin{enumerate}
+      \item $A \perp G \mid \{F\}$\\
+            False. There is a V-structure between $A$ and $G$.
+            $$A \rightarrow B \rightarrow D \leftarrow G$$
+            Given $F$ and thus implying we know $D$, it couples $A$ and $G$. Thus $A$ and $G$ are dependent.
+      \item $A \perp G \mid \{E\}$\\
+            False. There is a common cause structure.
+            $$A \leftarrow C \rightarrow E \rightarrow G$$
+            $A$ and $E$ are dependent, and thus by cascade structure $A$ and $G$ are also dependent. But given $E$, it blocks the active path between $A$ and $G$. Thus $A$ and $G$ are independent given $E$.
+      \item $A \perp E \mid \{C\}$\\
+            True. $A$, $C$ and $E$ have a common cause structure.
+            $$A \leftarrow C \rightarrow E$$
+            Given the common cause $C$, it decouples $A$ and $E$. There are no other active paths between $A$ and $C$, thus they are independent.
+      \item $A \perp E \mid \{C, D\}$\\
+            False. Similar to part (c), given $C$ it decouples $A$ and $E$ at $A \leftarrow C \rightarrow E$. However, there exists a V-structure between $A$ and $E$.
+            $$A \rightarrow B \rightarrow D \leftarrow E$$
+            Similar to part (a), given $D$ it couples $A$ and $E$. Thus $A$ and $E$ are dependent.
+      \item $A \perp D \mid \{B, E\}$\\
+            True. Cascade from $A \rightarrow B \rightarrow D$ is blocked given $B$. Common cause couples $A$ and $E$. But path from $A \leftarrow C \rightarrow E \rightarrow D$ is blocked given $E$. Since all paths from $A$ to $D$ are blocked, $A$ and $D$ are independent.
+\end{enumerate}
+\clearpage

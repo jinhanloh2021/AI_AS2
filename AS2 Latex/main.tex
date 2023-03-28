@@ -1,0 +1,63 @@
+\documentclass[12pt]{article}
+\usepackage[paper=letterpaper,margin=2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{newtxtext, newtxmath}
+\usepackage{enumitem}
+\usepackage{titling}
+\usepackage[colorlinks=true]{hyperref}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{multicol}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  % aboveskip=3mm,
+  % belowskip=3mm,
+  upquote=true,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  backgroundcolor=\color{white},   % choose the background color
+  captionpos=b,                    % sets the caption-position to bottom
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+}
+
+\setlist[enumerate]{wide=0pt, widest=99,leftmargin=\parindent, labelsep=*}
+\setlength{\droptitle}{-6em}
+
+%random comment
+% Enter the specific assignment number and topic of that assignment below, and replace "Your Name" with your actual name.
+\begin{titlepage}
+  \title{Introduction to AI}
+  \author{Assignment 1}
+  \date{\today}
+\end{titlepage}
+
+\begin{document}
+\maketitle
+\begin{enumerate}
+  \include{A1}
+  \include{A2}
+  \include{A3}
+  \include{A4}
+  \include{A5}
+\end{enumerate}
+
+\end{document}
