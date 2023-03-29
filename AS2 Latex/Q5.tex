@@ -1,0 +1,13 @@
+\item In this question, you need to install OpenAI gym:
+\begin{itemize}
+  \item \href{https://github.com/openai/gym}{\color{blue}Installation Instructions}
+  \item \href{https://www.gymlibrary.dev/content/basic_usage/}{\color{blue}Documentation}
+\end{itemize}
+Once the gym is installed, you have to implement Q-learning for the \href{https://www.gymlibrary.dev/environments/toy_text/frozen_lake/}{\color{blue}\lstinline{FrozenLake-v1}
+  environment} in python using the gym library and show the rewards obtained. Use option \lstinline{is_slippery=True}. Use map size 4x4 (check option '\lstinline{map_name}').\\
+You may use a discount factor $\gamma = 0.95$. Please provide the following things in your solution for this question:
+\begin{enumerate}
+  \item Code that implements Q-learning for the \lstinline{FrozenLake-v1} example in the gym? Copy and paste the code in the solution pdf, and provide the actual code file also. A key thing to determine first is what is the size of the state space and action space in this environment to make the appropriate data structures such as the Q-table \textbf{[6 points]}
+  \item For each episode, compute the total accumulated reward (also called episode return). Plot the average return (over the last 50 episodes) while your agent is learning (x-axis will be the episode number, y-axis will be the average return over the last 50 episodes). Make sure that you train for sufficiently many episodes so that convergence occurs. \textbf{[3 points]}
+  \item What is the epsilon you used for epsilon-greedy exploration and how did you select this epsilon $\varepsilon$? What would happen if you use a high epsilon such as $\varepsilon = 0.5$? \textbf{[1 point]}
+\end{enumerate}
