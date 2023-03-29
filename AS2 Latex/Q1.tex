@@ -41,6 +41,7 @@ Please note that $S$ is start and $G$ is the goal state.
         \begin{center}
           \bgroup
           \def\arraystretch{1.5}%
+          \captionsetup{type=figure}
           \begin{tabular}{|c|c|c|}
             \hline
             Node $n$ & Min cost to reach $G$ from $n$ & $h(n)$ \\
@@ -55,6 +56,7 @@ Please note that $S$ is start and $G$ is the goal state.
             $H$      & $3$                            & $1$    \\
             \hline
           \end{tabular}
+          \captionof{table}{Comparison of min cost to goal and heuristic for every node}
           \egroup
         \end{center}
         Since $\forall n$, $h(n)\le Mincost(n)$, the heuristic $h$ is admissible.
@@ -79,6 +81,7 @@ Please note that $S$ is start and $G$ is the goal state.
         \begin{center}
           \bgroup
           \def\arraystretch{1.5}%
+          \captionsetup{type=figure}
           \begin{tabular}{|c|c|c|c|}
             \hline
             Step \# & Open Queue           & Dequeue & Nodes to add \\
@@ -94,6 +97,7 @@ Please note that $S$ is start and $G$ is the goal state.
             $9$     & $G^H$                & $G$     &              \\
             \hline
           \end{tabular}
+          \captionof{table}{BFS priority queue}
           \egroup
         \end{center}
         Path taken is
@@ -109,6 +113,7 @@ Please note that $S$ is start and $G$ is the goal state.
         \begin{center}
           \bgroup
           \def\arraystretch{1.5}%
+          \captionsetup{type=figure}
           \begin{tabular}{|c|c|c|c|}
             \hline
             Step \# & Open Priority Queue                      & Dequeue & Nodes to add \\
@@ -123,6 +128,7 @@ Please note that $S$ is start and $G$ is the goal state.
             $8$     & $G^H_{14}, C^B_{15}$                     & $G$     &              \\
             \hline
           \end{tabular}
+          \captionof{table}{A* search priority queue}
           \egroup
         \end{center}
         Path taken is

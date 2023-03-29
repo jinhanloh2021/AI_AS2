@@ -1,7 +1,182 @@
-\item In this question, you will employ Singular Value Decomposition to obtain word embeddings and compare the generated word embeddings with the word embeddings generated using word2vec. The corpus to be considered is a set of tweets posted about the Covid- 19 pandemic on Twitter (\lstinline{Corona_Tweets.csv}), which is a real-life dataset. You need to do the following (code template provided is \lstinline{Q4_template_tweets.ipynb} you are free to use helper functions if required):
+\item In this question, you will employ Singular Value Decomposition to obtain word embeddings and compare the generated word embeddings with the word embeddings generated using word2vec. The corpus to be considered is a set of tweets posted about the Covid- 19 pandemic on Twitter (\lstinline{Corona_Tweets.csv}), which is a real-life dataset. You need to do the following (code template provided is \lstinline{Q4_template_tweets.ipynb} you are free to use helper functions if required):\\
 \begin{enumerate}
   \item Update the \lstinline{load_data} function from the \lstinline{Q4_template_tweets.ipynb} to preprocess words: remove non-letters, convert words into the lower case, and remove the stop words. You can employ some functions from the \lstinline{NLP-pipeline-example.ipynb} example and may use regular expressions from \lstinline{Word2Vec.ipynb}. {\bf [2 marks]}
+        \begin{lstlisting}
+    def load_data():
+      """ Read tweets from the file.
+          Return:
+              list of lists (list_words), with words from each of the processed tweets
+      """
+      tweets = pd.read_csv('/content/drive/MyDrive/Colab Notebooks/AI_AS2/Corona_Tweets.csv', names=['text'])
+      list_words = []
+      ### iterate over all tweets from the dataset
+      for i in tweets.index:
+        ### remove URLs
+        text = re.sub("https?://\S+|www\.\S+", " ", tweets.loc[i, 'text'])
+        ### remove non-letter.
+        text = re.sub("[^a-zA-Z]"," ",text)
+        ### tokenize
+        words = text.split()
+        
+        new_words = []
+        ### iterate over all words of a tweet
+        for w in words:
+          ## TODO: remove the stop words and convert a word (w) to the lower case
+          stops = set(stopwords.words("english"))
+          if w not in stops:
+            new_words.append(w.lower())
+          
+        list_words.append(new_words)
+      return list_words
+  \end{lstlisting}
   \item Create the co-occurrence matrix for all the remaining words (after stop words are eliminated), where the window of co-occurrence is 5 on either side of the word. What is the size of your vocabulary (i.e., how many unique words you end up with)? \textbf{[4 marks]}
+        \begin{lstlisting}
+    def distinct_words(corpus):
+      """ get a list of distinct words for the corpus.
+          Params:
+              corpus (list of list of strings): corpus of documents
+          Return:
+              corpus_words (list of strings): list of distinct words across the corpus, sorted (using python 'sorted' function)
+              num_corpus_words (integer): number of distinct words across the corpus
+      """
+      corpus_words = set()
+      for tweet in corpus:
+        for word in tweet:
+          corpus_words.add(word)
+      corpus_words = sorted(list(corpus_words))
+      num_corpus_words = len(corpus_words)
+      return corpus_words, num_corpus_words
+
+    words, num_words = distinct_words(twitter_corpus) # 11454 unique words
+  \end{lstlisting}
+        \begin{lstlisting}
+    def compute_co_occurrence_matrix(corpus, window_size=5):
+      """ Compute co-occurrence matrix for the given corpus and window_size (default of 5).
+          Params:
+              corpus (list of list of strings): corpus of documents
+              window_size (int): size of context window
+          Return:
+              M (numpy matrix of shape = [number of corpus words x number of corpus words]): 
+                  Co-occurence matrix of word counts. 
+                  The ordering of the words in the rows/columns should be the same as the ordering of the words given by the distinct_words function.
+              word2Ind (dict): dictionary that maps word to index (i.e. row/column number) for matrix M.
+      """
+      M = np.zeros((num_words, num_words), dtype=int)
+      word2Ind = {}
+      for i, w in enumerate(words):
+        word2Ind[w] = i
+      for tweet in corpus:
+        for i, w in enumerate(tweet):
+          w_idx = word2Ind[w]
+          start = i - 5
+          end = i + 5 + 1 #exclusive
+          for j in range(start, end):
+            if(i != j and j >= 0 and j < len(tweet)):
+              c_idx = word2Ind[tweet[j]]
+              M[w_idx, c_idx] += 1
+              M[c_idx, w_idx] += 1
+      return M, word2Ind
+
+    M, word2Ind = compute_co_occurrence_matrix(twitter_corpus)
+  \end{lstlisting}
+        The number of unique vocabulary is $11454$.
   \item Apply SVD and obtain word embeddings of size 75. {\bf [2 marks]}
+        \begin{lstlisting}
+    # -----------------------------
+    # Run SVD
+    # Note: This may take several minutes (~20-30 minutes)
+    # ------------------------------
+    la = np.linalg
+    U, s, Vh = la.svd(M, full_matrices=False)
+
+    # Compute SVD embeddings
+    embedding_size = 75
+    SVD_embeddings = np.dot(U[:,:embedding_size], np.diag(s[:embedding_size]))
+  \end{lstlisting}
   \item Then, please generate word embeddings of size 75 using \lstinline{Word2Vec.ipynb} (uploaded in class lecture material) on the same dataset. Please show comparison on few examples to understand which method works better. You may use the \lstinline{svd.most_similar} function from the template to perform the comparisons. Note your observations in your solution. You can use words like “covid”, “grocery” etc to compare the two models. {\bf [2 marks]}
+        \begin{lstlisting}
+    # Creating the word2vec model and setting values for the various parameters
+    # Initializing the train model. 
+    num_features = 75   # Word vector dimensionality
+    min_word_count = 0  # Minimum word count. You can change it also.
+    num_workers = 4     # Number of parallel threads, can be changed
+    context = 5         # Context window size
+    downsampling = 1e-3 # (0.001) Downsample setting for frequent words, can be changed
+    # Initializing the train model
+    print("Training Word2Vec model....")
+    model = word2vec.Word2Vec(twitter_corpus,
+                              workers=num_workers,
+                              vector_size=num_features, # API Change to vector_size
+                              min_count=min_word_count,
+                              window=context,
+                              sample=downsampling)
+
+    # To make the model memory efficient
+    model.init_sims(replace=True)
+  \end{lstlisting}
+        \begin{lstlisting}
+    def svd_most_similar(query_word, n=10):
+        """ return 'n' most similar words of a query word using the SVD word embeddings similar to word2vec's most_similar    
+            Params:
+                query_word (strings): a query word
+            Return:
+                most_similar (list of strings): the list of 'n' most similar words
+        """
+        # get index of a query_word
+        query_word_idx = word2Ind[query_word]
+        # get word embedding for a query_word
+        word = SVD_embeddings[query_word_idx]
+        #cosine similarity matrix
+        cos_similarity = cosine_similarity(SVD_embeddings, word.reshape(1, -1))
+        most_similar = []
+        # model.wv.most_similar(query_word)
+        '''
+            Write additional code to compute the list most_similar. Each entry in the list is a tuple (w, cos)
+            where w is one of the most similar word to query_word and cos is cosine similarity of w with query_word
+        '''
+        # get index of top n most similar words
+        similar_i = np.argsort(-cos_similarity.flatten())[1:n+1]
+        
+        # get similar words and cos_sim score
+        for i in similar_i:
+          word = list(word2Ind.keys())[i]
+          cos_sim = cos_similarity[i][0]
+          most_similar.append((word, cos_sim))
+
+        # sort decreasing based on second item in tuple
+        most_similar.sort(key=lambda x: x[1], reverse=True)
+
+        return most_similar
+  \end{lstlisting}
+        \begin{lstlisting}
+    svd_most_similar("covid")
+    model.wv.most_similar("covid") #this word2vec trained model on tweets
+    svd_most_similar("grocery")
+    model.wv.most_similar("grocery")
+  \end{lstlisting}
+        \begin{center}
+          \bgroup
+          \def\arraystretch{1.5}%
+          \captionsetup{type=figure}
+          \begin{tabular}{|c|c c|c c|}
+            \hline
+            {}   & \multicolumn{2}{c|}{\textbf{covid}} & \multicolumn{2}{c|}{\textbf{grocery}}                            \\
+            \hline
+            Rank & SVD                                 & word2vec                              & SVD           & word2vec \\
+            \hline
+            {1}  & outbreak                            & panicbuying                           & mailing       & went     \\
+            {2}  & pandemic                            & coronaoutbreak                        & mall          & shelves  \\
+            {3}  & new                                 & coronavirus                           & liquor        & empty    \\
+            {4}  & check                               & pandemic                              & ht            & local    \\
+            {5}  & fear                                & coronavirusoutbreak                   & accusations   & today    \\
+            {6}  & due                                 & lockdown                              & elys          & no       \\
+            {7}  & toiletpaper                         & corona                                & llama         & retail   \\
+            {8}  & change                              & coronapocalypse                       & dollargeneral & bread    \\
+            {9}  & probably                            & uk                                    & pajama        & packs    \\
+            {10} & news                                & due                                   & quarterly     & pasta    \\
+            \hline
+          \end{tabular}
+          \captionof{table}{Similar words for covid and grocery for each model}
+          \egroup
+        \end{center}
 \end{enumerate}
